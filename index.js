@@ -33,21 +33,99 @@ function questionInit() {
 }
 questionInit();
 
+
 function departmentVPrompt(selection) {
-inquirer.prompt()
+    const departmentVQ = [{
+        type: "input",
+        message: "",
+
+    }]
+    inquirer.prompt().then(() => {
+
+        questionInit();
+    })
 }
 function rolesVPrompt(selection) {
+    inquirer.prompt().then(() => {
 
+        questionInit();
+    })
 }
 function employeesVPrompt(selection) {
+    inquirer.prompt().then(() => {
 
+        questionInit();
+    })
+}
+function addDepartmentPrompt(selection) {
+    const addDepartmentQ = [{
+        type: "input",
+        message: "Enter Department Name:",
+        name: "dep-name"
+    }];
+    inquirer.prompt(addDepartmentQ).then(() => {
+
+        questionInit();
+    })
 }
 function addRolePrompt(selection) {
+    const addRoleQ = [{
+        type: "input",
+        message: "Enter Role Title:",
+        name: "title"
+    }, {
+        type:"input",
+        message:"Enter Role Salary:",
+        name:"salary"
+    }, {
+        type:"list",
+        message:"Select The Department:",
+        choices: [],
+        name:"dep"
+    }]
+    inquirer.prompt(addRoleQ).then(() => {
 
+        questionInit();
+    })
 }
 function addEmployeePrompt(selection) {
+    const addEmployeeQ = [{
+        type: "input",
+        message: "Enter First Name:",
+        name: "fname"
+    }, {
+        type:"input",
+        message:"Enter Last Name:",
+        name:"lname"
+    }, {
+        type:"list",
+        message:"Select Role:",
+        choices: [],
+        name:"role"
+    }, {
+        type:"list",
+        message:"Select Employee Manager:",
+        choices: [],
+        name:""
+    }]
+    inquirer.prompt(addEmployeeQ).then(() => {
 
+        questionInit();
+    })
 }
 function updateEmployeeRolePrompt(selection) {
+    const updateEmployeeRoleQ = [{
+        type: "input",
+        message: "Enter Employee:",
+        name: "emp-name"
+    },{
+        type:  "list",
+        message: "Choose a Role:",
+        choices: [],
+        name: "role"
+    }]
+    inquirer.prompt(updateEmployeeRoleQ).then(() => {
 
+        questionInit();
+    })
 }
