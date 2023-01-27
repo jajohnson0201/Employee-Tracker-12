@@ -6,12 +6,31 @@ const db = mysql.createConnection(
         host: 'localhost',
         user: 'root',
         // MySQL password
-        password: '',
+        password: 'chicken',
         database: 'dept_db'
     },
-    console.log(`Connected to the dept_db database.`)
 );
-const {addDepartment, addRole, addEmployee, updateEmployeeRole} = require('./server');
+const { addDepartment, addRole, addEmployee, updateEmployeeRole } = require('./server');
+const cTable = require('console.table');
+let roles = [];
+let employees = [];
+let departments = [];
+
+
+
+function dataInit() {
+    db.query(`SELECT title FROM roles;`, function (err, results) {
+        roles = results.map(r => r.title);
+    });
+    db.query(`SELECT first_name, last_name FROM employee;`, function (err, results) {
+        console.log("Got the employees", results);
+        employees = results.map(r => `${r.first_name} ${r.last_name}`);
+    });
+    db.query(`SELECT name FROM department;`, function (err, results) {
+        departments = results.map(d => d.name);
+    });
+}
+dataInit();
 
 
 function questionInit() {
@@ -46,95 +65,111 @@ function questionInit() {
 }
 questionInit();
 
-
 function logRoleResults() {
-    db.query('SELECT * FROM role', function (err, results) {
-        console.log(results);
+    db.query('SELECT * FROM roles', function (err, results) {
+        console.table("Roles", results);
+        questionInit();
     });
 }
 function logEmployeeResults() {
     db.query('SELECT * FROM employee', function (err, results) {
-        console.log(results);
+        console.table("Employees", results);
+        questionInit();
     });
 }
 function logDepartmentResults() {
     db.query('SELECT * FROM department', function (err, results) {
-        console.log(results);
+        console.table("Departments", results);
+        questionInit();
     });
 }
-function addDepartmentPrompt(selection) {
+function addDepartmentPrompt() {
     const addDepartmentQ = [{
         type: "input",
         message: "Enter Department Name:",
-        name: "dep-name"
+        name: "dep_name"
     }];
     inquirer.prompt(addDepartmentQ).then((data) => {
-        addDepartment(data)
+        
+        addDepartment(data);
         questionInit();
     })
 }
-function addRolePrompt(selection) {
+function addRolePrompt() {
+    db.query(`SELECT name, id FROM department;`, function (err, results) {
+        departments = results.map(d => d.name)
+        
+    });
+    console.log();
     const addRoleQ = [{
         type: "input",
         message: "Enter Role Title:",
         name: "title"
     }, {
-        type:"input",
-        message:"Enter Role Salary:",
-        name:"salary"
+        type: "input",
+        message: "Enter Role Salary:",
+        name: "salary"
     }, {
-        type:"list",
-        message:"Select The Department:",
-        choices: [],
-        name:"dep"
+        type: "list",
+        message: "Select The Department:",
+        choices: departments,
+        name: "dep"
     }]
     inquirer.prompt(addRoleQ).then((data) => {
-        addRole();
+        addRole(data);
         questionInit();
     })
 }
-function addEmployeePrompt(selection) {
+function addEmployeePrompt() {
+    db.query(`SELECT title FROM roles;`, function (err, results) {
+        roles = results.map(r => r.title)
+    });
     const addEmployeeQ = [{
         type: "input",
         message: "Enter First Name:",
-        name: "fname"
+        name: "first_name"
     }, {
-        type:"input",
-        message:"Enter Last Name:",
-        name:"lname"
+        type: "input",
+        message: "Enter Last Name:",
+        name: "last_name"
     }, {
-        type:"list",
-        message:"Select Role:",
-        choices: [],
-        name:"role"
+        type: "list",
+        message: "Select Role:",
+        choices: roles,
+        name: "role"
     }, {
-        type:"list",
-        message:"Select Employee Manager:",
-        choices: [],
-        name:""
+        type: "list",
+        message: "Select Employee Manager:",
+        choices: [1, 2, 3],
+        name: "emp_manager"
     }]
     inquirer.prompt(addEmployeeQ).then((data) => {
         addEmployee(data);
         questionInit();
     })
 }
-function updateEmployeeRolePrompt(selection) {
+function updateEmployeeRolePrompt() {
+    db.query(`SELECT title FROM roles;`, function (err, results) {
+        roles = results.map(r => r.title)
+    });
     const updateEmployeeRoleQ = [{
         type: "input",
         message: "Enter Employee First Name:",
-        name: "Firstname"
-    },{
+        name: "first_name"
+    }, {
         type: "input",
         message: "Enter Employee Last Name:",
-        name: "Lastname"
-    },{
-        type:  "list",
+        name: "last_name"
+    }, {
+        type: "list",
         message: "Choose a Role:",
-        choices: [],
+        choices: roles,
         name: "role"
     }]
     inquirer.prompt(updateEmployeeRoleQ).then((data) => {
         updateEmployeeRole(data);
         questionInit();
-    })
+    });
 }
+
+module.exports = questionInit;
