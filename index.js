@@ -1,5 +1,18 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+const mysql = require('mysql2');
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        // MySQL password
+        password: '',
+        database: 'dept_db'
+    },
+    console.log(`Connected to the dept_db database.`)
+);
+const {addDepartment, addRole, addEmployee, updateEmployeeRole} = require('./server');
+
 
 function questionInit() {
     const questionInit = [
@@ -15,11 +28,11 @@ function questionInit() {
     inquirer
         .prompt(questionInit).then((initData) => {
             if (initData.selection === "View all Departments") {
-                departmentVPrompt(initData.selection);
+                logDepartmentResults(initData.selection);
             } else if (initData.selection === "View all Roles") {
-                rolesVPrompt(initData.selection);
+                logRoleResults(initData.selection);
             } else if (initData.selection === "View all Employees") {
-                employeesVPrompt(initData.selection);
+                logEmployeeResults(initData.selection);
             } else if (initData.selection === "Add a Department") {
                 addDepartmentPrompt(initData.selection);
             } else if (initData.selection === "Add a Role") {
@@ -34,28 +47,20 @@ function questionInit() {
 questionInit();
 
 
-function departmentVPrompt(selection) {
-    const departmentVQ = [{
-        type: "input",
-        message: "",
-
-    }]
-    inquirer.prompt().then(() => {
-
-        questionInit();
-    })
+function logRoleResults() {
+    db.query('SELECT * FROM role', function (err, results) {
+        console.log(results);
+    });
 }
-function rolesVPrompt(selection) {
-    inquirer.prompt().then(() => {
-
-        questionInit();
-    })
+function logEmployeeResults() {
+    db.query('SELECT * FROM employee', function (err, results) {
+        console.log(results);
+    });
 }
-function employeesVPrompt(selection) {
-    inquirer.prompt().then(() => {
-
-        questionInit();
-    })
+function logDepartmentResults() {
+    db.query('SELECT * FROM department', function (err, results) {
+        console.log(results);
+    });
 }
 function addDepartmentPrompt(selection) {
     const addDepartmentQ = [{
@@ -63,8 +68,8 @@ function addDepartmentPrompt(selection) {
         message: "Enter Department Name:",
         name: "dep-name"
     }];
-    inquirer.prompt(addDepartmentQ).then(() => {
-
+    inquirer.prompt(addDepartmentQ).then((data) => {
+        addDepartment(data)
         questionInit();
     })
 }
@@ -83,8 +88,8 @@ function addRolePrompt(selection) {
         choices: [],
         name:"dep"
     }]
-    inquirer.prompt(addRoleQ).then(() => {
-
+    inquirer.prompt(addRoleQ).then((data) => {
+        addRole();
         questionInit();
     })
 }
@@ -108,24 +113,28 @@ function addEmployeePrompt(selection) {
         choices: [],
         name:""
     }]
-    inquirer.prompt(addEmployeeQ).then(() => {
-
+    inquirer.prompt(addEmployeeQ).then((data) => {
+        addEmployee(data);
         questionInit();
     })
 }
 function updateEmployeeRolePrompt(selection) {
     const updateEmployeeRoleQ = [{
         type: "input",
-        message: "Enter Employee:",
-        name: "emp-name"
+        message: "Enter Employee First Name:",
+        name: "Firstname"
+    },{
+        type: "input",
+        message: "Enter Employee Last Name:",
+        name: "Lastname"
     },{
         type:  "list",
         message: "Choose a Role:",
         choices: [],
         name: "role"
     }]
-    inquirer.prompt(updateEmployeeRoleQ).then(() => {
-
+    inquirer.prompt(updateEmployeeRoleQ).then((data) => {
+        updateEmployeeRole(data);
         questionInit();
     })
 }
