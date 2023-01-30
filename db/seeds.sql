@@ -4,9 +4,9 @@ VALUES ('IT'),
 ('Large-Production');
 
 INSERT INTO roles (title, salary, department_id)
-VALUES ("Manager", 100.03,2),
-("Manager", 100000.03,1),
-("Manager", 200.03,3),
+VALUES ("ManagerSP", 100.03,2),
+("ManagerIT", 100000.03,1),
+("ManagerLP", 200.03,3),
 ("FrontEnd Nerd",87000.03,1),
 ("Little Packer",300.03,2),
 ("Big Packer",600.03,3),
