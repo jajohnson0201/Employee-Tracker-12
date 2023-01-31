@@ -20,10 +20,10 @@
 ## Installation
 - Install npm packages, in the terminal, write ('npm i')   
 - Next, in the terminal, run ('node index.js').       
-- Lastly, fill out questions and find generated file when finished!
+- Lastly, make selection and enjoy!
 
 ## Usage
-- npm(console.table, inquirer, mysql2)  
+- npm (console.table, inquirer, mysql2)  
 - node
 
 ## License
