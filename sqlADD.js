@@ -10,13 +10,14 @@ const db = mysql.createConnection(
         database: 'dept_db'
     },
 );
-
+// adds a department to the database.
 function addDepartment(data) {
     db.query(` 
     INSERT INTO department(name) 
     VALUES(?);`, data.dep_name);
     console.log("Department Added!");
 }
+// adds a role to the database.
 function addRole(data) {
     let dep = 0;
     if (data.dep === "IT") {
@@ -31,19 +32,14 @@ function addRole(data) {
     INSERT INTO roles (title,salary,department_id) 
     VALUES(?,?,?);`, param);
 }
+// adds an employee to the database.
 async function addEmployee(data) {
-    let ids = [];
-    let roles = [];
     let role;
-    let roleResults = [];
     const results = await db.promise().query(`SELECT id, title FROM roles;`
     );
     console.log(results[0]);
     const dbResults = results[0];
     console.log(dbResults.length);
-    // const roles = results[0].map((results)=>{
-
-    // });
     for (let i = 0; i < dbResults.length; i++) {
         if (data.role === dbResults[i].title) {
             role = dbResults[i].id;
@@ -69,6 +65,7 @@ async function addEmployee(data) {
         console.log(err);
     }
 }
+// adjusts role to employee on the database.
 async function updateEmployeeRole(data) {
     let first = [];
     let last = [];

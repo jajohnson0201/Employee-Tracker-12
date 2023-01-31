@@ -16,7 +16,7 @@ let roles = [];
 let departments = [];
 
 
-
+// gets info from the database for use in questions.
 function dataInit() {
     db.query(`SELECT title FROM roles;`, function (err, results) {
         roles = results.map(r => r.title);
@@ -28,8 +28,7 @@ function dataInit() {
         departments = results.map(d => d.name);
     });
 }
-
-
+// innitializes the app with a selection for what the user wishes to do.
 function questionInit() {
     dataInit();
     const questionInit = [
@@ -62,25 +61,28 @@ function questionInit() {
         });
 }
 questionInit();
-
+// logs the roles table from dept_db
 function logRoleResults() {
     db.query('SELECT * FROM roles', function (err, results) {
         console.table("Roles", results);
         questionInit();
     });
 }
+// logs the employee table from dept_db
 function logEmployeeResults() {
     db.query('SELECT * FROM employee', function (err, results) {
         console.table("Employees", results);
         questionInit();
     });
 }
+// logs the department table from dept_db
 function logDepartmentResults() {
     db.query('SELECT * FROM department', function (err, results) {
         console.table("Departments", results);
         questionInit();
     });
 }
+// question for adding department to database.
 function addDepartmentPrompt() {
     const addDepartmentQ = [{
         type: "input",
@@ -92,6 +94,7 @@ function addDepartmentPrompt() {
         questionInit();
     });
 }
+// question for adding roles to the database
 function addRolePrompt() {
     db.query(`SELECT name, id FROM department;`, function (err, results) {
         departments = results.map(d => d.name)
@@ -115,6 +118,7 @@ function addRolePrompt() {
         questionInit();
     });
 }
+// question for adding employee's to the database
 function addEmployeePrompt() {
     db.query(`SELECT title FROM roles;`, function (err, results) {
         roles = results.map(r => r.title)
@@ -143,6 +147,7 @@ function addEmployeePrompt() {
         questionInit();
     });
 }
+// inquiring to get the name and expected role adjustment requested.
 function updateEmployeeRolePrompt() {
     db.query(`SELECT title FROM roles;`, function (err, results) {
         roles = results.map(r => r.title);
