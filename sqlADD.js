@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
-const {questionInit, updateEmployeeRolePrompt} = require("./index");
+const { brotliDecompress } = require('zlib');
+const { updateEmployeeRolePrompt } = require("./index");
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -14,67 +15,85 @@ function addDepartment(data) {
     db.query(` 
     INSERT INTO department(name) 
     VALUES(?);`, data.dep_name);
-    questionInit();
+    console.log("Department Added!");
 }
 function addRole(data) {
-    const param = [data.title, parseInt(data.salary), data.dep];
-    db.query(`
-    INSERT INTO role(title,salary,department_id) 
-    VALUES(?,?,?);`, param);
-    questionInit();
-}
-function addEmployee(data) {
-    let man = '';
-    if (data.emp_manager === "IT"){
-        man = data.emp_manager;
-    } else if (data.emp_manager === "Small-Packaging"){
-        man = data.emp_manager;
-    } else if (data.emp_manager === "Large-Production"){
-        man = data.emp_manager;
+    let dep = 0;
+    if (data.dep === "IT") {
+        dep = 1;
+    } else if (data.dep === "Small-Packaging") {
+        dep = 2;
+    } else {
+        dep = 3;
     }
-    const param = [data.first_name, data.last_name, data.role, man];
+    const param = [data.title, parseFloat(data.salary), dep];
     db.query(`
+    INSERT INTO roles (title,salary,department_id) 
+    VALUES(?,?,?);`, param);
+}
+async function addEmployee(data) {
+    let ids = [];
+    let roles = [];
+    let role;
+    let roleResults = [];
+    const results = await db.promise().query(`SELECT id, title FROM roles;`
+    );
+    console.log(results[0]);
+    const dbResults = results[0];
+    console.log(dbResults.length);
+    // const roles = results[0].map((results)=>{
+
+    // });
+    for (let i = 0; i < dbResults.length; i++) {
+        if (data.role === dbResults[i].title) {
+            role = dbResults[i].id;
+        }
+    }
+    console.log(role);
+    console.log(data);
+    let man = '';
+    if (data.emp_manager === 'IT') {
+        man = 1;
+    } else if (data.emp_manager === "Small-Packaging") {
+        man = 2;
+    } else if (data.emp_manager === "Large-Production") {
+        man = 3;
+    }
+    const param = [data.first_name, data.last_name, role, man];
+    console.log(param);
+    try {
+        db.query(`
     INSERT INTO employee(first_name,last_name,role_id,manager_id) 
     VALUES(?,?,?,?);`, param);
-    questionInit();
+    } catch (err) {
+        console.log(err);
+    }
 }
-function updateEmployeeRole(data) {
-    let roles = [];
-    let ids = [];
+async function updateEmployeeRole(data) {
     let first = [];
     let last = [];
     let empRole = [];
     let role = '';
-    let TorF = '';
-    db.query(`SELECT title, id FROM roles;`, function (err, results) {
-        roles = results.map(r => r.title);
-        ids = results.map(e => e.id);
-    });
-    db.query(`SELECT first_name, last_name FROM, role_id employee;`, function (err, results) {
+    let TorF = false;
+    const results = await db.promise().query(`SELECT title, id FROM roles;`);
+    console.log(results[0]);
+    const dbResults = results[0];
+    db.query(`SELECT first_name, last_name FROM employee;`, function (err, results) {
         first = results.map(r => r.first_name);
         last = results.map(e => e.last_name);
         empRole = results.map(a => a.role_id);
     });
-    for(const i = 0; i > first.length; i++){
-        if(data.first_name === first[i]){
-            TorF = true ; 
-            role = empRole[i];
+    for (let i = 0; i < dbResults.length; i++) {
+        if (data.role === dbResults[i].title) {
+            role = dbResults[i].id;
+            TorF = true;
         }
     }
-    for(const i = 0; i > last.length; i++){
-        if(data.last_name === last[i]){
-            TorF = true ; 
-        }
-    }
-    const param = [role,data.first_name];
-    if(TorF){
-    db.query(`
-    UPDATE employee SET role_id = ? WHERE first_name = ?`, param);
-    console.log("Complete!");
-} else {
-    console.log("Choose a valid employee!");
-    updateEmployeeRolePrompt();
+    const param = [role, data.first_name];
+    try {
+        db.query(`
+        UPDATE employee SET role_id = ? WHERE first_name = ?`, param);
+    } catch (err) { console.log(err); }
 }
-    questionInit();
-}
+
 module.exports = { addDepartment, addRole, addEmployee, updateEmployeeRole };

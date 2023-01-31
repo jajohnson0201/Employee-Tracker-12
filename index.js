@@ -13,7 +13,6 @@ const db = mysql.createConnection(
 const { addDepartment, addRole, addEmployee, updateEmployeeRole } = require('./sqlADD');
 const cTable = require('console.table');
 let roles = [];
-let employees = [];
 let departments = [];
 
 
@@ -29,10 +28,10 @@ function dataInit() {
         departments = results.map(d => d.name);
     });
 }
-dataInit();
 
 
 function questionInit() {
+    dataInit();
     const questionInit = [
         {
             type: 'list',
@@ -163,10 +162,9 @@ function updateEmployeeRolePrompt() {
         name: "role"
     }];
     inquirer.prompt(updateEmployeeRoleQ).then((data) => {
-        console.log("updateEmp", data);
         updateEmployeeRole(data);
         questionInit();
     });
 }
 
-module.exports = {questionInit, updateEmployeeRolePrompt};
+module.exports = {updateEmployeeRolePrompt};
