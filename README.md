@@ -22,6 +22,8 @@
 - Next, in the terminal, run ('node index.js').       
 - Lastly, make selection and enjoy!
 
+https://drive.google.com/file/d/1h-0FXg68TA2lbdSsNXSwK9cbBdG9mlQ6/view
+
 ## Usage
 - npm (console.table, inquirer, mysql2)  
 - node
